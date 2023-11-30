@@ -1,0 +1,12 @@
+* Advent of Code 2023 in Go 🐭
+
+This is my 3rd attempt of AoC, this year I will try to get all of the days 🎄
+
+** Setup
+
+Using emacs with [[https://gist.github.com/Aadv1k/2bd92889f3a10a5ffb6298b8fb7d04bf][this config]]
+
+** Past 
+
+- [[https://github.com/aadv1k/AdventOfC2022][AoC 2022 in C]]
+- [[https://github.com/aadv1k/AdventOfLua2021][AoC 2021 in Lua]] 
