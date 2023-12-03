@@ -37,7 +37,6 @@ func main() {
 
 	scanner := bufio.NewScanner(fptr)
 
-
 	sumOfPowers := 0;
 	for scanner.Scan() {
 		line := scanner.Text();
