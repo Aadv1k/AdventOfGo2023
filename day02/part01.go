@@ -49,7 +49,6 @@ func main() {
 		lineCount ++;
 	}
 
-
 	fmt.Printf("There are %d possible games and their sum-score is %d\n", goodGames, sumOfGID);
 
 	if err := scanner.Err(); err != nil {
