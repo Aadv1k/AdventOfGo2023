@@ -5,78 +5,78 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
+	"regexp"
+	"strconv" 
 )
 
 func isIntChar(c byte) bool {
 	return c <= '9' && c >= '0'
 }
 
-func findNextInt(start int, column int, lines []string) int {
-	for i := start; i < len(lines[column]); i++ {
-		if isIntChar(lines[column][i]) {
-			return i
-		}
-	}
-	return len(lines[column])
-}
-
-func hasNeighbours(start int, end int, column int, lines []string) bool {
-	directions := [][2]int{
-		{1, -1}, {1, 0}, {1, 1},
-		{0, -1}, {0, 1},
-		{-1, -1}, {-1, 0}, {-1, 1},
-	}
-
-	for i := start; i < end; i++ {
-		for _, dir := range directions {
-			row, col := column+dir[0], i+dir[1]
-			if row >= 0 && row < len(lines) && col >= 0 && col < len(lines[row]) {
-				target := lines[row][col]
-				if target == '*' {
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
 func main() {
-	fptr, err := os.Open("sample.txt")
+	fptr, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer fptr.Close()
 
 	scanner := bufio.NewScanner(fptr)
-	lines := []string{}
+
+	var lines []string
 
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := scanner.Text()
+		lines = append(lines, line)
+	}
+
+	var directions = [][2]int{
+		{-1, 1}, {0, 1}, {1, 1},
+		{-1, 0}, {1, 0},
+		{-1, -1}, {0, -1}, {1, -1},
+	}
+
+	re := regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]`)
+
+	hasAdjacentSymbol := func(colStart int, colEnd int, row int) bool { 
+		for i := colStart; i < colEnd; i++ {
+			for _, dir := range directions { 
+				newCol := i + dir[0]
+				newRow := row + dir[1]
+
+				if newCol >= 0 && newCol < len(lines[0]) && newRow >= 0 && newRow < len(lines) {
+					if re.MatchString(string(lines[newRow][newCol])) {
+						return true
+					}
+				}
+			}
+		}
+		return false
 	}
 
 	totalSum := 0
 
-	for i := 1; i < len(lines)-1; i++ {
-		numString := ""
-		start, end := 0, 0
-		for j := 1; j < len(lines[i])-1; j++ {
-			if lines[i][j] == '.' {
-				end = j
+	for i := 0; i < len(lines); i++ {
+		for j := 0; j < len(lines[0]); j++ {
+			if isIntChar(lines[i][j]) {
+				endX := j
 
-				if hasNeighbours(start, end, i, lines) {
-					converted, _ := strconv.Atoi(numString)
-					totalSum += converted
+				for endX < len(lines[0]) && lines[i][endX] != '.' && !re.MatchString(string(lines[i][endX])) {
+					endX++
 				}
 
-				//j = findNextInt(end, i, lines)
-			}
+				if hasAdjacentSymbol(j, endX, i) {
+					numeral, _ := strconv.Atoi(lines[i][j:endX]);
+					fmt.Printf("Good part: %d\n", numeral);
+					totalSum += numeral
+				}
 
-			fmt.Printf("%c\n", lines[i][j]);
-			numString += string(lines[i][j])
+				j = endX 
+			}
 		}
 	}
+
+	fmt.Printf("The total sum of the good engine parts is %d", totalSum)
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
