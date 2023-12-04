@@ -6,6 +6,11 @@ This is my 3rd attempt of AoC, this year I will try to get all of the days 🎄
 
 Using emacs with [[https://gist.github.com/Aadv1k/2bd92889f3a10a5ffb6298b8fb7d04bf][this config]]
 
+** Logs 
+- Day(1, 2): did these in a day, I must say  this years' AoC challenges for the initial days are much harder than previous ones.  Day01 part2 was tricky to get right, Day02 was easy whence understood, but still hard to implement due to the nature of input
+- Day(3) WIP
+- Day(4): I am having fun with Go, probably still need to refactor and make the code clean. 
+
 ** Past 
 
 - [[https://github.com/aadv1k/AdventOfC2022][AoC 2022 in C]]
