@@ -1,17 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strconv"
 	"bufio"
+	"fmt"
 	"log"
+	"os"
 	"regexp"
+	"strconv"
+	"unicode"
 )
-
-func isIntChar(c int) bool {
-	return c <= 57 && c >= 48;
-}
 
 var digits = map[string]int{
 	"one":   1,
@@ -25,90 +22,93 @@ var digits = map[string]int{
 	"nine":  9,
 }
 
-var digitPattern string = "one|two|three|four|five|six|seven|eight|nine";
-var digitRe = regexp.MustCompile(digitPattern);
+var digitPattern = "one|two|three|four|five|six|seven|eight|nine"
+var digitRe = regexp.MustCompile(digitPattern)
+
+func isDigit(c byte) bool {
+	return unicode.IsDigit(rune(c))
+}
 
 func getFirstDigitOrSpelling(targetString string) int {
-	buf := "";
+	var buf string
 
 	for i := 0; i < len(targetString); i++ {
-		buf += string(targetString[i]);
+		buf += string(targetString[i])
 
-		foundDigit := digitRe.FindString(buf);
+		foundDigit := digitRe.FindString(buf)
 
 		if len(foundDigit) != 0 {
-			return digits[foundDigit];
+			return digits[foundDigit]
 		}
 
-		if isIntChar(int(targetString[i])) {
-			val, _ := strconv.Atoi(string(targetString[i]));
-			return val;
+		if isDigit(targetString[i]) {
+			val, _ := strconv.Atoi(string(targetString[i]))
+			return val
 		}
 	}
 
-	fmt.Printf("NOT FOUND");
-	return 0;
+	fmt.Printf("NOT FOUND")
+	return 0
 }
-
 
 func reverseString(str string) string {
-	result := "";
+	var result string
 	for _, c := range str {
-		result = string(c) + result;
+		result = string(c) + result
 	}
-	return result; 
+	return result
 }
 
-func getLastDigitOrSpelling(targetString string) int {
-	buf := "";
+func lastDigitOrSpelling(targetString string) int {
+	var buf string
 
 	for i := len(targetString) - 1; i >= 0; i-- {
-		buf += string(targetString[i]);
+		buf += string(targetString[i])
 
-		foundDigit := digitRe.FindString(reverseString(buf));
+		foundDigit := digitRe.FindString(reverseString(buf))
 
 		if len(foundDigit) != 0 {
-			return digits[foundDigit];
+			return digits[foundDigit]
 		}
 
-		if isIntChar(int(targetString[i])) {
-			val, _ := strconv.Atoi(string(targetString[i]));
-			return val;
+		if isDigit(targetString[i]) {
+			val, _ := strconv.Atoi(string(targetString[i]))
+			return val
 		}
 	}
 
-	fmt.Printf("NOT FOUND: %s\n", targetString);
-	return 0;
+	fmt.Printf("NOT FOUND: %s\n", targetString)
+	return 0
 }
 
 func main() {
 	fptr, err := os.Open("input.txt")
-
 	if err != nil {
-		log.Fatal(err);
+		log.Fatal(err)
 	}
+	defer fptr.Close()
 
-	defer fptr.Close();
-
-	scanner := bufio.NewScanner(fptr);
-	sum := 0;
+	scanner := bufio.NewScanner(fptr)
+	sum := 0
 
 	for scanner.Scan() {
-		var line string = scanner.Text();
-		
-		t, err := strconv.Atoi(strconv.Itoa(getFirstDigitOrSpelling(line)) + strconv.Itoa(getLastDigitOrSpelling(line)));
+		line := scanner.Text()
 
-		 if err != nil {
-		 	log.Fatal(err);
-		 }
+		firstDigit := getFirstDigitOrSpelling(line)
+		lastDigit := lastDigitOrSpelling(line)
 
-		sum += t;
+		t := strconv.Itoa(firstDigit) + strconv.Itoa(lastDigit)
+		calibrationValue, err := strconv.Atoi(t)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		sum += calibrationValue
 	}
 
-	fmt.Printf("The sum of all calibration values is %d\n", sum);
-
-  if err := scanner.Err(); err != nil {
+	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
 
+	fmt.Printf("Part02: The sum of all calibration, including words values is %d\n", sum)
 }

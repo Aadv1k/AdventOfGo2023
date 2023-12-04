@@ -6,31 +6,38 @@ import (
 	"strconv"
 	"bufio"
 	"os"
+	"unicode"
 )
 
-func isIntChar(c int) bool {
-	return c <= 57 && c >= 48;
+func isDigit(c byte) bool {
+	return unicode.IsDigit(rune(c))
 }
 
-func getSumOfLine(line string) string {
+func SumOfLine(line string) (int, error) {
 	first, last := 0, 0
 
 	for i := 0; i < len(line); i++ {
-		ch := int(line[i]);
-		if isIntChar(ch) {
-			first = ch;
+		ch := line[i]
+		if isDigit(ch) {
+			first = int(ch)
 
 			for j := len(line) - 1; j >= i; j-- {
-				ch := int(line[j]);
-				if isIntChar(ch) {
-					last = ch;
-					break;
+				ch := line[j]
+				if isDigit(ch) {
+					last = int(ch)
+					break
 				}
 			}
-			break;
+			break
 		}
 	}
-	return string(first) + string(last);
+
+	convertedDigit, err := strconv.Atoi(fmt.Sprintf("%d%d", first, last))
+	if err != nil {
+		return 0, fmt.Errorf("unable to convert string to integer: %w", err)
+	}
+
+	return convertedDigit, nil
 }
 
 func main() {
@@ -46,11 +53,17 @@ func main() {
 	sum := 0;
 	for fscanner.Scan() {
 		var line string = fscanner.Text();
-		i, _ := strconv.Atoi(getSumOfLine(line));
-		sum += i;
+
+		calibrationValue, err := SumOfLine(line);
+
+		if err != nil {
+			log.Fatal(err);
+		}
+
+		sum += calibrationValue;
 	}
 
-	fmt.Printf("The sum of all calibration values is %d\n", sum);
+	fmt.Printf("Part01: The sum of all calibration values is %d\n", sum);
 
 
   if err := fscanner.Err(); err != nil {
