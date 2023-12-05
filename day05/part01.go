@@ -10,7 +10,7 @@ import (
 )
 
 type MapItem struct {
-	source      int
+	src         int
 	dest        int
 	rangeLength int
 }
@@ -19,44 +19,41 @@ func ConvertStringToMapItem(s string) MapItem {
 	parts := strings.Fields(s)
 
 	dest, err := strconv.Atoi(parts[0])
-	if err != nil {
-		log.Fatalf("Error converting source to int: %v", err)
-	}
+	checkError(err, "Error converting src to int")
 
 	source, err := strconv.Atoi(parts[1])
-	if err != nil {
-		log.Fatalf("Error converting dest to int: %v", err)
-	}
+	checkError(err, "Error converting dest to int")
 
 	length, err := strconv.Atoi(parts[2])
-	if err != nil {
-		log.Fatalf("Error converting length to int: %v", err)
-	}
+	checkError(err, "Error converting length to int")
 
 	return MapItem{
-		source:      source,
+		src:         source,
 		dest:        dest,
 		rangeLength: length,
 	}
 }
 
-func main() {
-	content, err := os.ReadFile("sample.txt")
-
+func checkError(err error, msg string) {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%s: %v", msg, err)
 	}
+}
+
+func main() {
+	content, err := os.ReadFile("input.txt")
+	checkError(err, "Error reading file")
 
 	var conversionMaps [][]MapItem
 
 	re := regexp.MustCompile(`\r?\n\r?\n`)
 	mapContent := re.Split(string(content), -1)
 
-	for _, item := range mapContent[1:] { // Ignore the seed string.
-		mapStrs := strings.Split(item, "\n")
+	for _, item := range mapContent[1:] {
+		mapStrs := strings.FieldsFunc(item, func(r rune) bool { return r == '\n' })
 
 		var conversionMap []MapItem
-		for _, mapStr := range mapStrs[1:] { // Ignore the title; eg "seed-to-soil map".
+		for _, mapStr := range mapStrs[1:] {
 			if len(mapStr) == 0 {
 				continue
 			}
@@ -65,31 +62,51 @@ func main() {
 		conversionMaps = append(conversionMaps, conversionMap)
 	}
 
+	var scores []int
+
 	_, seeds, _ := strings.Cut(mapContent[0], ": ")
-	for _, seedStr := range strings.Split(seeds, " ")[0:1] {
-		seed, err := strconv.Atoi(seedStr)
+	for _, seedStr := range strings.Fields(seeds) {
+		seed := parseInt(seedStr, "Unable to convert seed to an integer")
 
-		if err != nil {
-			log.Fatalf("Unable to convert '%s' to an integer\n", seedStr)
-		}
-
-		fmt.Printf("Initial Seed value: %d\n", seed)
 		for _, conversionMap := range conversionMaps {
-			newSeed := GetDestFromMap(conversionMap, seed)
-			seed = newSeed
-			fmt.Printf("-> value: %d\n", seed)
+			seed = GetDestFromMap(conversionMap, seed)
 		}
 
-		fmt.Printf("Final seed value: %d\n", seed)
+		scores = append(scores, seed)
+
+		fmt.Printf("Seed '%s' location: %d\n", seedStr, seed)
 	}
+
+	fmt.Printf("The minimum of the above is %d\n", min(scores...))
+}
+
+func parseInt(s, errMsg string) int {
+	i, err := strconv.Atoi(s)
+	checkError(err, errMsg)
+	return i
 }
 
 func GetDestFromMap(cMap []MapItem, seed int) int {
 	for _, mapItem := range cMap {
-		if mapItem.source <= seed {
-			maybeSeed := (seed - mapItem.source) + mapItem.dest
-			return maybeSeed
+		if seed >= mapItem.src && seed <= mapItem.src+mapItem.rangeLength {
+			return mapItem.dest + (seed - mapItem.src)
 		}
 	}
+
 	return seed
+}
+
+func min(values ...int) int {
+	if len(values) == 0 {
+		log.Fatal("min: empty slice")
+	}
+
+	minValue := values[0]
+	for _, value := range values[1:] {
+		if value < minValue {
+			minValue = value
+		}
+	}
+
+	return minValue
 }
