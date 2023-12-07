@@ -41,7 +41,7 @@ func checkError(err error, msg string) {
 }
 
 func main() {
-	content, err := os.ReadFile("input.txt")
+	content, err := os.ReadFile("sample.txt")
 	checkError(err, "Error reading file")
 
 	var conversionMaps [][]MapItem
