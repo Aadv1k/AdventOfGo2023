@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/aadv1k/AdventOfGo2023/day01"
 	"github.com/aadv1k/AdventOfGo2023/day02"
 	"github.com/aadv1k/AdventOfGo2023/day03"
@@ -23,13 +26,21 @@ func runDay(day string, part01, part02 func(string)) {
 		panic(err)
 	}
 
-	println("===== " + day + " =====")
+	fmt.Printf("===== %s =====\n", day)
+
 	if part01 != nil {
+		start := time.Now()
 		part01(input)
+		elapsed := time.Since(start)
+		fmt.Printf("Part01 took %s\n", elapsed)
 	}
 
 	if part02 != nil {
+		start := time.Now()
 		part02(input)
+		elapsed := time.Since(start)
+		fmt.Printf("Part02 took %s\n", elapsed)
 	}
-	println()
+
+	fmt.Println()
 }

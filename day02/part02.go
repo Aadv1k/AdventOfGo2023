@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
 func getMinimumPowerForLine(str string) int {
@@ -26,7 +28,7 @@ func getMinimumPowerForLine(str string) int {
 
 func Part02(input string) {
 	sumOfPowers := 0
-	for _, line := range strings.Split(input, "\r\n") {
+	for _, line := range utils.SplitLines(input) {
 		sumOfPowers += getMinimumPowerForLine(line)
 	}
 

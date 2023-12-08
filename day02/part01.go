@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
 const (
@@ -31,7 +32,8 @@ func isGameLineGood(str string) bool {
 
 func Part01(input string) {
 	sumOfGID, goodGames, lineCount := 0, 0, 1
-	for _, line := range strings.Split(input, "\r\n") {
+
+	for _, line := range utils.SplitLines(input) {
 		if isGameLineGood(line) {
 			sumOfGID += lineCount + 1
 			goodGames++

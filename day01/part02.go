@@ -13,7 +13,7 @@ import (
 func Part02(input string) {
 	sum := 0
 
-	for _, line := range strings.Split(input, "\r\n") {
+	for _, line := range strings.Split(input, "\n") {
 		firstDigit := getFirstDigitOrSpelling(line)
 		lastDigit := lastDigitOrSpelling(line)
 
@@ -26,7 +26,7 @@ func Part02(input string) {
 		sum += calibrationValue
 	}
 
-	fmt.Printf("Part02: The sum of all calibration, including words values is %d\n", sum)
+	fmt.Printf("The sum of all calibration, including words values is %d\n", sum)
 }
 
 var digits = map[string]int{

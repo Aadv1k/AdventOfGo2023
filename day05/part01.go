@@ -61,7 +61,7 @@ func Part01(input string) {
 
 		scores = append(scores, seed)
 
-		fmt.Printf("Seed '%s' location: %d\n", seedStr, seed)
+		//fmt.Printf("Seed '%s' location: %d\n", seedStr, seed)
 	}
 
 	fmt.Printf("The minimum of the above is %d\n", min(scores...))

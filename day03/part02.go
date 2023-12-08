@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
 func Part02(input string) {
-	var lines []string = strings.Split(input, "\r\n")
+	lines := utils.SplitLines(input)
 
 	var directions = [][2]int{
 		{-1, 1}, {0, 1}, {1, 1},

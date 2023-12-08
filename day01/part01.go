@@ -21,7 +21,7 @@ func Part01(input string) {
 		sum += calibrationValue
 	}
 
-	fmt.Printf("Part01: The sum of all calibration values is %d\n", sum)
+	fmt.Printf("The sum of all calibration values is %d\n", sum)
 }
 
 func SumOfLine(line string) (int, error) {

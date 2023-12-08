@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -25,4 +26,10 @@ func ParseInt(s string) int {
 		panic(err)
 	}
 	return i
+}
+
+func SplitLines(s string) []string {
+	return strings.FieldsFunc(s, func(r rune) bool {
+		return r == '\n' || r == '\r'
+	})
 }
