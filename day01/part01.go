@@ -1,16 +1,27 @@
-package main
-	
+package day01
+
 import (
 	"fmt"
 	"log"
 	"strconv"
-	"bufio"
-	"os"
-	"unicode"
+	"strings"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
-func isDigit(c byte) bool {
-	return unicode.IsDigit(rune(c))
+func Part01(input string) {
+	sum := 0
+	for _, line := range strings.Split(input, "\n") {
+		calibrationValue, err := SumOfLine(line)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		sum += calibrationValue
+	}
+
+	fmt.Printf("Part01: The sum of all calibration values is %d\n", sum)
 }
 
 func SumOfLine(line string) (int, error) {
@@ -18,12 +29,12 @@ func SumOfLine(line string) (int, error) {
 
 	for i := 0; i < len(line); i++ {
 		ch := line[i]
-		if isDigit(ch) {
+		if utils.IsDigit(ch) {
 			first = int(ch)
 
 			for j := len(line) - 1; j >= i; j-- {
 				ch := line[j]
-				if isDigit(ch) {
+				if utils.IsDigit(ch) {
 					last = int(ch)
 					break
 				}
@@ -38,35 +49,4 @@ func SumOfLine(line string) (int, error) {
 	}
 
 	return convertedDigit, nil
-}
-
-func main() {
-	fptr, err := os.Open("input.txt");
-	if err != nil {
-		log.Fatal(err);
-	}
-
-	defer fptr.Close();
-
-	fscanner := bufio.NewScanner(fptr);
-
-	sum := 0;
-	for fscanner.Scan() {
-		var line string = fscanner.Text();
-
-		calibrationValue, err := SumOfLine(line);
-
-		if err != nil {
-			log.Fatal(err);
-		}
-
-		sum += calibrationValue;
-	}
-
-	fmt.Printf("Part01: The sum of all calibration values is %d\n", sum);
-
-
-  if err := fscanner.Err(); err != nil {
-		log.Fatal(err)
-	}
 }

@@ -1,14 +1,33 @@
-package main
+package day01
 
 import (
-	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
-	"unicode"
+	"strings"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
+
+func Part02(input string) {
+	sum := 0
+
+	for _, line := range strings.Split(input, "\r\n") {
+		firstDigit := getFirstDigitOrSpelling(line)
+		lastDigit := lastDigitOrSpelling(line)
+
+		t := strconv.Itoa(firstDigit) + strconv.Itoa(lastDigit)
+		calibrationValue, err := strconv.Atoi(t)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		sum += calibrationValue
+	}
+
+	fmt.Printf("Part02: The sum of all calibration, including words values is %d\n", sum)
+}
 
 var digits = map[string]int{
 	"one":   1,
@@ -25,10 +44,6 @@ var digits = map[string]int{
 var digitPattern = "one|two|three|four|five|six|seven|eight|nine"
 var digitRe = regexp.MustCompile(digitPattern)
 
-func isDigit(c byte) bool {
-	return unicode.IsDigit(rune(c))
-}
-
 func getFirstDigitOrSpelling(targetString string) int {
 	var buf string
 
@@ -41,13 +56,11 @@ func getFirstDigitOrSpelling(targetString string) int {
 			return digits[foundDigit]
 		}
 
-		if isDigit(targetString[i]) {
+		if utils.IsDigit(targetString[i]) {
 			val, _ := strconv.Atoi(string(targetString[i]))
 			return val
 		}
 	}
-
-	fmt.Printf("NOT FOUND")
 	return 0
 }
 
@@ -71,44 +84,11 @@ func lastDigitOrSpelling(targetString string) int {
 			return digits[foundDigit]
 		}
 
-		if isDigit(targetString[i]) {
+		if utils.IsDigit(targetString[i]) {
 			val, _ := strconv.Atoi(string(targetString[i]))
 			return val
 		}
 	}
 
-	fmt.Printf("NOT FOUND: %s\n", targetString)
 	return 0
-}
-
-func main() {
-	fptr, err := os.Open("input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fptr.Close()
-
-	scanner := bufio.NewScanner(fptr)
-	sum := 0
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		firstDigit := getFirstDigitOrSpelling(line)
-		lastDigit := lastDigitOrSpelling(line)
-
-		t := strconv.Itoa(firstDigit) + strconv.Itoa(lastDigit)
-		calibrationValue, err := strconv.Atoi(t)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		sum += calibrationValue
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Part02: The sum of all calibration, including words values is %d\n", sum)
 }
