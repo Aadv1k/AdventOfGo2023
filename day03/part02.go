@@ -1,17 +1,13 @@
-package main
+package day03
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"regexp"
 	"strconv"
-)
+	"strings"
 
-func isIntChar(c byte) bool {
-	return c <= '9' && c >= '0'
-}
+	"github.com/aadv1k/AdventOfGo2023/utils"
+)
 
 // This represents a number location with one adjacent symbol.
 type HalfGear struct {
@@ -21,26 +17,8 @@ type HalfGear struct {
 	value  int
 }
 
-func PrintHalfGear(gear HalfGear) {
-	fmt.Printf(" Gear at Y=%d, StartX=%d, EndX=%d, Value=%d\n", gear.y, gear.startX, gear.endX, gear.value)
-}
-
-func main() {
-	fptr, err := os.Open("input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer fptr.Close()
-
-	scanner := bufio.NewScanner(fptr)
-
-	var lines []string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
+func Part02(input string) {
+	var lines []string = strings.Split(input, "\r\n")
 
 	var directions = [][2]int{
 		{-1, 1}, {0, 1}, {1, 1},
@@ -72,7 +50,7 @@ func main() {
 
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[0]); j++ {
-			if isIntChar(lines[i][j]) {
+			if utils.IsDigit(lines[i][j]) {
 				endX := j
 
 				for endX < len(lines[0]) && lines[i][endX] != '.' && !re.MatchString(string(lines[i][endX])) {
@@ -102,9 +80,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("The total gear-ratio sum is %d\n", gearRatioSum);
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
+	fmt.Printf("The total gear-ratio sum is %d\n", gearRatioSum)
 }

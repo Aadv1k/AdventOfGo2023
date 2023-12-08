@@ -1,34 +1,16 @@
-package main
+package day03
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"regexp"
-	"strconv" 
+	"strconv"
+	"strings"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
-func isIntChar(c byte) bool {
-	return c <= '9' && c >= '0'
-}
-
-func main() {
-	fptr, err := os.Open("input.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer fptr.Close()
-
-	scanner := bufio.NewScanner(fptr)
-
-	var lines []string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
+func Part01(input string) {
+	var lines []string = strings.Split(input, "\r\n")
 
 	var directions = [][2]int{
 		{-1, 1}, {0, 1}, {1, 1},
@@ -38,9 +20,9 @@ func main() {
 
 	re := regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]`)
 
-	hasAdjacentSymbol := func(colStart int, colEnd int, row int) bool { 
+	hasAdjacentSymbol := func(colStart int, colEnd int, row int) bool {
 		for i := colStart; i < colEnd; i++ {
-			for _, dir := range directions { 
+			for _, dir := range directions {
 				newCol := i + dir[0]
 				newRow := row + dir[1]
 
@@ -58,7 +40,7 @@ func main() {
 
 	for i := 0; i < len(lines); i++ {
 		for j := 0; j < len(lines[0]); j++ {
-			if isIntChar(lines[i][j]) {
+			if utils.IsDigit(lines[i][j]) {
 				endX := j
 
 				for endX < len(lines[0]) && lines[i][endX] != '.' && !re.MatchString(string(lines[i][endX])) {
@@ -66,19 +48,14 @@ func main() {
 				}
 
 				if hasAdjacentSymbol(j, endX, i) {
-					numeral, _ := strconv.Atoi(lines[i][j:endX]);
-					fmt.Printf("Good part: %d\n", numeral);
+					numeral, _ := strconv.Atoi(lines[i][j:endX])
 					totalSum += numeral
 				}
 
-				j = endX 
+				j = endX
 			}
 		}
 	}
 
 	fmt.Printf("The total sum of the good engine parts is %d", totalSum)
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
 }

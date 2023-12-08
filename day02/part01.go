@@ -1,12 +1,10 @@
-package main
+package day02
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -31,19 +29,9 @@ func isGameLineGood(str string) bool {
 		compareAgainstRegex(regexp.MustCompile("([0-9]|[0-1][0-9]|20) green"), GreenCount)
 }
 
-func main() {
-	fptr, err := os.Open("input.txt")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fptr.Close()
-
-	scanner := bufio.NewScanner(fptr)
-
+func Part01(input string) {
 	sumOfGID, goodGames, lineCount := 0, 0, 1
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range strings.Split(input, "\r\n") {
 		if isGameLineGood(line) {
 			sumOfGID += lineCount + 1
 			goodGames++
@@ -52,8 +40,4 @@ func main() {
 	}
 
 	fmt.Printf("There are %d possible games and their sum-score is %d\n", goodGames, sumOfGID)
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
 }
