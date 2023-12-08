@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"strconv"
 	"unicode"
 )
 
@@ -16,4 +17,12 @@ func ReadFileIntoString(filepath string) (string, error) {
 	}
 
 	return string(content), nil
+}
+
+func ParseInt(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		panic(err)
+	}
+	return i
 }

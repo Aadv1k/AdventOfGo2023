@@ -1,12 +1,13 @@
-package main
+package day05
 
 import (
 	"fmt"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
 type MapItem struct {
@@ -18,14 +19,9 @@ type MapItem struct {
 func ConvertStringToMapItem(s string) MapItem {
 	parts := strings.Fields(s)
 
-	dest, err := strconv.Atoi(parts[0])
-	checkError(err, "Error converting src to int")
-
-	source, err := strconv.Atoi(parts[1])
-	checkError(err, "Error converting dest to int")
-
-	length, err := strconv.Atoi(parts[2])
-	checkError(err, "Error converting length to int")
+	dest, _ := strconv.Atoi(parts[0])
+	source, _ := strconv.Atoi(parts[1])
+	length, _ := strconv.Atoi(parts[2])
 
 	return MapItem{
 		src:         source,
@@ -34,20 +30,11 @@ func ConvertStringToMapItem(s string) MapItem {
 	}
 }
 
-func checkError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %v", msg, err)
-	}
-}
-
-func main() {
-	content, err := os.ReadFile("input.txt")
-	checkError(err, "Error reading file")
-
+func Part01(input string) {
 	var conversionMaps [][]MapItem
 
 	re := regexp.MustCompile(`\r?\n\r?\n`)
-	mapContent := re.Split(string(content), -1)
+	mapContent := re.Split(input, -1)
 
 	for _, item := range mapContent[1:] {
 		mapStrs := strings.FieldsFunc(item, func(r rune) bool { return r == '\n' })
@@ -66,7 +53,7 @@ func main() {
 
 	_, seeds, _ := strings.Cut(mapContent[0], ": ")
 	for _, seedStr := range strings.Fields(seeds) {
-		seed := parseInt(seedStr, "Unable to convert seed to an integer")
+		seed := utils.ParseInt(seedStr)
 
 		for _, conversionMap := range conversionMaps {
 			seed = GetDestFromMap(conversionMap, seed)
@@ -78,12 +65,6 @@ func main() {
 	}
 
 	fmt.Printf("The minimum of the above is %d\n", min(scores...))
-}
-
-func parseInt(s, errMsg string) int {
-	i, err := strconv.Atoi(s)
-	checkError(err, errMsg)
-	return i
 }
 
 func GetDestFromMap(cMap []MapItem, seed int) int {
