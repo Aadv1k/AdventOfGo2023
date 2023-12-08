@@ -4,23 +4,25 @@ import (
 	"github.com/aadv1k/AdventOfGo2023/day01"
 	"github.com/aadv1k/AdventOfGo2023/day02"
 	"github.com/aadv1k/AdventOfGo2023/day03"
+	"github.com/aadv1k/AdventOfGo2023/day04"
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
 func main() {
-	day01Input, _ := utils.ReadFileIntoString("data/day01/input.txt")
+	runDay("day01", day01.Part01, day01.Part02)
+	runDay("day02", day02.Part01, day02.Part02)
+	runDay("day03", day03.Part01, day03.Part02)
+	runDay("day04", day04.Part01, day04.Part02)
+}
 
-	day01.Part01(day01Input)
-	day01.Part02(day01Input)
+func runDay(day string, part01, part02 func(string)) {
+	input, err := utils.ReadFileIntoString("data/" + day + "/input.txt")
+	if err != nil {
+		panic(err)
+	}
 
-	day02Input, _ := utils.ReadFileIntoString("data/day02/input.txt")
-
-	day02.Part01(day02Input)
-	day02.Part02(day02Input)
-
-	day03Input, _ := utils.ReadFileIntoString("data/day03/input.txt")
-
-	day03.Part01(day03Input)
-	day03.Part02(day03Input)
-
+	println("===== " + day + " =====")
+	part01(input)
+	part02(input)
+	println()
 }

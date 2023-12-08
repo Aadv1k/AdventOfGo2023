@@ -1,58 +1,42 @@
-package main
-	
+package day04
+
 import (
 	"fmt"
-	"log"
-	"bufio"
-	"os"
-	"regexp"
 	"math"
+	"regexp"
 	"strings"
 )
 
+func Part01(input string) {
+	sum := 0
+	for _, line := range strings.Split(input, "\n") {
+		if len(line) == 0 {
+			continue
+		}
+		sum += int(getPointsForLine(line))
+	}
+
+	fmt.Printf("Total points of the cards %d\n", sum)
+}
+
 func getPointsForLine(line string) int {
-	_, cardPoints, _ := strings.Cut(line, ": ");
-	givenPoints, winningPoints, _ := strings.Cut(cardPoints, " | ");
+	_, cardPoints, _ := strings.Cut(line, ": ")
+	givenPoints, winningPoints, _ := strings.Cut(cardPoints, " | ")
 
-	powCount := 0;
+	powCount := 0
 
-	re := regexp.MustCompile("([0-9][0-9]|[0-9])");
+	re := regexp.MustCompile("([0-9][0-9]|[0-9])")
 
 	for _, givenPoint := range re.FindAllString(givenPoints, -1) {
 		for _, winningPoint := range re.FindAllString(winningPoints, -1) {
 			if strings.TrimSpace(givenPoint) == strings.TrimSpace(winningPoint) {
-				powCount ++;
+				powCount++
 			}
 		}
 	}
 
-
 	if powCount <= 2 {
-		return powCount;
+		return powCount
 	}
-	return int(math.Pow(2, float64(powCount - 1)));
-}
-
-func main() {
-	fptr, err := os.Open("input.txt");
-	if err != nil {
-		log.Fatal(err);
-	}
-
-	defer fptr.Close();
-
-	fscanner := bufio.NewScanner(fptr);
-
-	sum := 0;
-	for fscanner.Scan() {
-		var line string = fscanner.Text();
-		sum += int(getPointsForLine(line));
-	}
-
-	fmt.Printf("Total points of the cards %d\n", sum);
-
-
-  if err := fscanner.Err(); err != nil {
-		log.Fatal(err)
-	}
+	return int(math.Pow(2, float64(powCount-1)))
 }

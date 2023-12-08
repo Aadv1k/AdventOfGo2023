@@ -57,5 +57,5 @@ func Part01(input string) {
 		}
 	}
 
-	fmt.Printf("The total sum of the good engine parts is %d", totalSum)
+	fmt.Printf("The total sum of the good engine parts is %d\n", totalSum)
 }

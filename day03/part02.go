@@ -9,14 +9,6 @@ import (
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
-// This represents a number location with one adjacent symbol.
-type HalfGear struct {
-	y      int
-	startX int
-	endX   int
-	value  int
-}
-
 func Part02(input string) {
 	var lines []string = strings.Split(input, "\r\n")
 
