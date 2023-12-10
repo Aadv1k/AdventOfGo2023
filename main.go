@@ -29,7 +29,7 @@ func main() {
 	case "day04":
 		runDay("day04", day04.Part01, day04.Part02)
 	case "day05":
-		runDay("day05", day05.Part01, nil)
+		runDay("day05", nil, day05.Part02)
 	default:
 		log.Fatalf("Unknown day: %s\n", os.Args[1])
 	}

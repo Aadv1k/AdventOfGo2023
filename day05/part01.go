@@ -2,7 +2,6 @@ package day05
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strconv"
 	"strings"
@@ -64,7 +63,7 @@ func Part01(input string) {
 		//fmt.Printf("Seed '%s' location: %d\n", seedStr, seed)
 	}
 
-	fmt.Printf("The minimum of the above is %d\n", min(scores...))
+	fmt.Printf("The minimum of the above is %d\n", utils.Min(scores...))
 }
 
 func GetDestFromMap(cMap []MapItem, seed int) int {
@@ -77,17 +76,3 @@ func GetDestFromMap(cMap []MapItem, seed int) int {
 	return seed
 }
 
-func min(values ...int) int {
-	if len(values) == 0 {
-		log.Fatal("min: empty slice")
-	}
-
-	minValue := values[0]
-	for _, value := range values[1:] {
-		if value < minValue {
-			minValue = value
-		}
-	}
-
-	return minValue
-}

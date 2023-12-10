@@ -8,6 +8,34 @@ import (
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
+type Range struct {
+	low  int
+	high int
+}
+
+func GetDestRangeFromMap(conversionMap []MapItem, target Range) Range {
+	for _, cMap := range conversionMap {
+		// Case 1: the range "A" starts ahead of "B"
+		//       -- (A)
+		// ----		 (B)
+		// Case 2: the range "A" doesn't fully cover "B"
+		// ------     (A)
+		// ---------- (B)
+		if cMap.src > target.low || target.high > cMap.src+cMap.rangeLength {
+			continue
+		}
+
+		offset := cMap.dest - cMap.src
+
+		return Range{
+			low:  target.low + offset,
+			high: target.high + offset,
+		}
+	}
+
+	return target
+}
+
 func Part02(input string) {
 	var conversionMaps [][]MapItem
 
@@ -27,28 +55,23 @@ func Part02(input string) {
 		conversionMaps = append(conversionMaps, conversionMap)
 	}
 
-	var scores []int
-
 	_, seeds, _ := strings.Cut(mapContent[0], ": ")
 	seedsAsWords := strings.Fields(seeds)
 
-	// NOTE: This is an absolutelly filthy, disgusting, nasty and grisly way to handle this logic especially with u8+ numbers (pretty much our input)
-	// 	     any other solution? Get faster processor lol. On a serious note, we can do a couple of things to speed this up.
 	for i := 0; i < len(seedsAsWords)-1; i += 2 {
-		baseSeed, iterAmount := utils.ParseInt(seedsAsWords[i]), utils.ParseInt(seedsAsWords[i+1])
+		startRange, rangeLength := utils.ParseInt(seedsAsWords[i]), utils.ParseInt(seedsAsWords[i+1])
+		endRange := startRange + rangeLength
 
-		for j := 0; j < iterAmount; j++ {
-			seed := baseSeed + j
-
-			for _, conversionMap := range conversionMaps {
-				seed = GetDestFromMap(conversionMap, seed)
-			}
-
-			scores = append(scores, seed)
-
-			fmt.Printf("Seed '%d' location: %d\n", baseSeed+j, seed)
+		baseRange := Range{
+			low:  startRange,
+			high: endRange,
 		}
-	}
 
-	fmt.Printf("The minimum of the above is %d\n", min(scores...))
+		for _, conversionMap := range conversionMaps {
+			baseRange = GetDestRangeFromMap(conversionMap, baseRange)
+		}
+
+		fmt.Printf("the range is now %v\n", baseRange)
+
+	}
 }
