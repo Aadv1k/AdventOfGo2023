@@ -16,34 +16,41 @@ import (
 )
 
 func main() {
-	if len(os.Args) <= 1 {
-		log.Fatal("You need to provide the day!\n")
+	if len(os.Args) <= 2 {
+		log.Fatalf("You need to provide both the day and the path to input!\n\t%s <day> <path/to/sample.txt>\n", os.Args[0])
 	}
 
-	switch os.Args[1] {
+	day := os.Args[1]
+	filePath := os.Args[2]
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		log.Fatalf("File not found: %s\n", filePath)
+	}
+
+	input, err := utils.ReadFileIntoString(filePath)
+	if err != nil {
+		log.Fatalf("Error reading input file: %v\n", err)
+	}
+
+	switch day {
 	case "day01":
-		runDay("day01", day01.Part01, day01.Part02)
+		runDay(day, day01.Part01, day01.Part02, input)
 	case "day02":
-		runDay("day02", day02.Part01, day02.Part02)
+		runDay(day, day02.Part01, day02.Part02, input)
 	case "day03":
-		runDay("day03", day03.Part01, day03.Part02)
+		runDay(day, day03.Part01, day03.Part02, input)
 	case "day04":
-		runDay("day04", day04.Part01, day04.Part02)
+		runDay(day, day04.Part01, day04.Part02, input)
 	case "day05":
-		runDay("day05", day05.Part01, day05.Part02)
+		runDay(day, day05.Part01, day05.Part02, input)
 	case "day06":
-		runDay("day06", day06.Part01, nil)
+		runDay(day, day06.Part01, day06.Part02, input)
 	default:
-		log.Fatalf("Unknown day: %s\n", os.Args[1])
+		log.Fatalf("Unknown day: %s\n", day)
 	}
 }
 
-func runDay(day string, part01, part02 func(string)) {
-	input, err := utils.ReadFileIntoString("data/" + day + "/input.txt")
-	if err != nil {
-		panic(err)
-	}
-
+func runDay(day string, part01, part02 func(string), input string) {
 	fmt.Printf("===== %s =====\n", day)
 
 	if part01 != nil {
