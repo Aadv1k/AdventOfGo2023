@@ -9,7 +9,7 @@ Using emacs with [this config](https://gist.github.com/Aadv1k/2bd92889f3a10a5ffb
 ## Usage
 
 ```shell
-go run . day01
+go run . day01 ./data/day01/input.txt
 ```
 
 ```
