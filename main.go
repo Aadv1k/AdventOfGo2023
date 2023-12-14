@@ -11,6 +11,7 @@ import (
 	"github.com/aadv1k/AdventOfGo2023/day03"
 	"github.com/aadv1k/AdventOfGo2023/day04"
 	"github.com/aadv1k/AdventOfGo2023/day05"
+	"github.com/aadv1k/AdventOfGo2023/day06"
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
@@ -29,14 +30,16 @@ func main() {
 	case "day04":
 		runDay("day04", day04.Part01, day04.Part02)
 	case "day05":
-		runDay("day05", nil, day05.Part02)
+		runDay("day05", day05.Part01, day05.Part02)
+	case "day06":
+		runDay("day06", day06.Part01, nil)
 	default:
 		log.Fatalf("Unknown day: %s\n", os.Args[1])
 	}
 }
 
 func runDay(day string, part01, part02 func(string)) {
-	input, err := utils.ReadFileIntoString("data/" + day + "/sample.txt")
+	input, err := utils.ReadFileIntoString("data/" + day + "/input.txt")
 	if err != nil {
 		panic(err)
 	}
