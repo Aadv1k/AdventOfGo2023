@@ -19,11 +19,9 @@ func Part01(input string) {
 	lines := strings.Split(input, "\n")
 
 	desertMap := make(map[string]Instruction)
-	var first string
 
 	// Ignore the first two lines since they are the instruction set and a blank line
-	for i, line := range lines[2:] {
-
+	for _, line := range lines[2:] {
 		if len(line) == 0 {
 			continue
 		}
@@ -33,13 +31,8 @@ func Part01(input string) {
 			left:  matches[1],
 			right: matches[2],
 		}
-
-		if i == 0 {
-			first = matches[0]
-		}
 	}
 
-	_ = first
 	current := "AAA"
 	steps := 0
 
