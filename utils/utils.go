@@ -18,7 +18,7 @@ func ReadFileIntoString(filepath string) (string, error) {
 		return "", err
 	}
 
-	return string(content), nil
+	return strings.TrimSpace(string(content)), nil
 }
 
 func ParseInt(s string) int {
