@@ -3,6 +3,8 @@ package day10
 import (
 	"fmt"
 	"log"
+	"os"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -13,15 +15,38 @@ var directions = [][2]int{
 	{0, -1},
 }
 
-func printField(field Field, current Vec2) {
-	fmt.Print("\033[H\033[2J")
+var stepsTaken = 0
 
-	for i := range field {
-		for j := range field[i] {
+func printField(field Field, current Vec2) {
+	clearScreen()
+
+	diameter := 4
+
+	startX := current.x - diameter
+	if startX < 0 {
+		startX = 0
+	}
+
+	startY := current.y - diameter
+	if startY < 0 {
+		startY = 0
+	}
+
+	endX := current.x + diameter + 1
+	if endX > len(field[0]) {
+		endX = len(field[0])
+	}
+
+	endY := current.y + diameter + 1
+	if endY > len(field) {
+		endY = len(field)
+	}
+
+	for i := startY; i < endY; i++ {
+		for j := startX; j < endX; j++ {
 			p := field[i][j]
 
 			if i == current.y && j == current.x {
-				// Highlight the current pipe with ANSI escape codes for red text
 				fmt.Printf("\x1b[31m[%c]\x1b[0m", p.ptype)
 			} else {
 				fmt.Printf(" %c ", p.ptype)
@@ -30,7 +55,13 @@ func printField(field Field, current Vec2) {
 		fmt.Println()
 	}
 
-	time.Sleep(750 * time.Millisecond)
+	time.Sleep(250 * time.Millisecond)
+}
+
+func clearScreen() {
+	cmd := exec.Command("clear") // for Unix-like systems
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
 
 type Pipe struct {
@@ -49,70 +80,73 @@ func CompareVec2GT(v1, v2 Vec2) bool {
 	return v1.x > v2.x || (v1.x == v2.x && v1.y > v2.y)
 }
 
+func isWithinBounds(field Field, x, y int) bool {
+	return y >= 0 && y < len(field) && x >= 0 && x < len(field[0])
+}
+
 func traverse(field Field, start Vec2) Vec2 {
-	curPipe := field[start.y][start.x]
-
-	if curPipe.ptype == 'S' || curPipe.ptype == '.' {
-		return start
-	}
-
+	currentPipe := field[start.y][start.x]
 	currentX, currentY := start.x, start.y
 
-	switch curPipe.ptype {
+	stepsTaken++
+
+	printField(field, start)
+
+	switch currentPipe.ptype {
 	case 'J':
-		if !field[start.y][start.x-1].visited {
-			// assume we will go to top
-			currentY--
-		} else {
-			// we will go to left
+		if currentX-1 >= 0 && !field[currentY][currentX-1].visited {
 			currentX--
+		} else {
+			currentY--
 		}
-	case '-':
-		if field[start.y][start.x-1].visited {
+	case 'L':
+		if currentX+1 < len(field[0]) && !field[currentY][currentX+1].visited {
 			currentX++
+		} else {
+			currentY--
+		}
+	case '7':
+		if currentY-1 >= 0 && !field[currentY-1][currentX].visited {
+			currentY--
 		} else {
 			currentX--
 		}
 	case 'F':
-		if !field[start.y][start.x+1].visited {
-			// assume we will go down
+		if currentY+1 < len(field) && !field[currentY+1][currentX].visited {
 			currentY++
 		} else {
-			// assume we will go right
 			currentX++
-		}
-	case 'L':
-		if field[start.y-1][start.x].visited {
-			// assume we will go to right
-			currentX++
-		} else {
-			// we will go to top
-			currentY--
-		}
-	case '7':
-		if field[start.y-1][start.x].visited {
-			// we'll go left
-			currentX--
-		} else {
-			// we'll go down
-			currentY--
 		}
 	case '|':
-		if !field[start.y-1][start.x].visited {
+		if currentY+1 < len(field) && !field[currentY+1][currentX].visited {
 			currentY++
 		} else {
 			currentY--
 		}
+	case '-':
+		if currentX+1 < len(field[0]) && !field[currentY][currentX+1].visited {
+			currentX++
+		} else {
+			currentX--
+		}
+	case '.':
+	case 'S':
+		break
 	default:
-		log.Panicf("Expected a valid pipe, got: %c", curPipe.ptype)
+		log.Panic("Something has gone haywire")
 	}
 
-	current := Vec2{x: currentX, y: currentY}
-	if CompareVec2GT(start, current) {
-		traverse(field, current)
+	currentPipe.visited = true
+
+	var current = Vec2{
+		x: currentX,
+		y: currentY,
 	}
 
-	printField(field, current)
+	if isWithinBounds(field, currentX, currentY) && CompareVec2GT(start, current) {
+		current = traverse(field, current)
+	}
+
 	return current
 }
 
@@ -133,7 +167,7 @@ func Part01(input string) {
 			}
 
 			block = append(block, Pipe{
-				ptype:   line[j], // fixed the index to use j instead of i
+				ptype:   line[j],
 				visited: false,
 			})
 		}
@@ -157,7 +191,7 @@ func Part01(input string) {
 			for _, direction := range directions {
 				x, y := direction[0]+j, direction[1]+i
 
-				if y < 0 || y >= len(field) || x < 0 || y >= len(field[0]) {
+				if !isWithinBounds(field, x, y) {
 					continue
 				}
 
@@ -175,5 +209,5 @@ func Part01(input string) {
 		}
 	}
 
-	log.Printf("final: %d %d", final.x, final.y)
+	log.Printf("final: %d %d %d", final.x, final.y, stepsTaken)
 }
