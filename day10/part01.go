@@ -3,11 +3,16 @@ package day10
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/aadv1k/AdventOfGo2023/utils"
 )
+
+const RecursionLimit = 200
 
 var directions = [][2]int{
 	{0, 1},
@@ -18,8 +23,6 @@ var directions = [][2]int{
 var stepsTaken = 0
 
 func printField(field Field, current Vec2) {
-	clearScreen()
-
 	diameter := 4
 
 	startX := current.x - diameter
@@ -52,14 +55,16 @@ func printField(field Field, current Vec2) {
 				fmt.Printf(" %c ", p.ptype)
 			}
 		}
+
+		// Print a newline after each line
 		fmt.Println()
 	}
 
-	time.Sleep(250 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 }
 
 func clearScreen() {
-	cmd := exec.Command("clear") // for Unix-like systems
+	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
@@ -76,19 +81,51 @@ type Vec2 struct {
 	y int
 }
 
-func CompareVec2GT(v1, v2 Vec2) bool {
-	return v1.x > v2.x || (v1.x == v2.x && v1.y > v2.y)
+func CompareVec2EQ(v1, v2 Vec2) bool {
+	return v1.x == v2.x && v1.y == v2.y
 }
 
 func isWithinBounds(field Field, x, y int) bool {
 	return y >= 0 && y < len(field) && x >= 0 && x < len(field[0])
 }
 
-func traverse(field Field, start Vec2) Vec2 {
+func findLargest(origin Vec2, elems []Vec2) (Vec2, int) {
+	log.Print(elems)
+	if len(elems) == 0 {
+		return Vec2{}, -1
+	}
+
+	// Amen
+	calculateDistance := func(v1, v2 Vec2) int {
+		return int(math.Abs(float64(v1.x-v2.x)) + math.Abs(float64(v1.y-v2.y)))
+	}
+
+	var largest Vec2
+	maxDistance := -1
+
+	for _, elem := range elems {
+		distance := calculateDistance(origin, elem)
+		if distance > maxDistance {
+			maxDistance = distance
+			largest = elem
+		}
+	}
+
+	return largest, maxDistance
+}
+func traverse(field Field, start Vec2) []Vec2 {
+	var visitedPoints []Vec2
+
 	currentPipe := field[start.y][start.x]
 	currentX, currentY := start.x, start.y
 
+	if currentPipe.visited {
+		return visitedPoints
+	}
+
 	stepsTaken++
+
+	field[currentY][currentX].visited = true
 
 	printField(field, start)
 
@@ -99,17 +136,21 @@ func traverse(field Field, start Vec2) Vec2 {
 		} else {
 			currentY--
 		}
+	case '7':
+		if currentY+1 < len(field) && !field[currentY][currentX-1].visited {
+			currentX--
+			break
+		}
+
+		if !field[currentY+1][currentX].visited {
+			currentY++
+		}
+
 	case 'L':
 		if currentX+1 < len(field[0]) && !field[currentY][currentX+1].visited {
 			currentX++
 		} else {
 			currentY--
-		}
-	case '7':
-		if currentY-1 >= 0 && !field[currentY-1][currentX].visited {
-			currentY--
-		} else {
-			currentX--
 		}
 	case 'F':
 		if currentY+1 < len(field) && !field[currentY+1][currentX].visited {
@@ -136,6 +177,10 @@ func traverse(field Field, start Vec2) Vec2 {
 		log.Panic("Something has gone haywire")
 	}
 
+	if stepsTaken >= RecursionLimit {
+		log.Panicf("Execeeded recursion limit of %d, either increase or something went wrong", RecursionLimit)
+	}
+
 	currentPipe.visited = true
 
 	var current = Vec2{
@@ -143,32 +188,34 @@ func traverse(field Field, start Vec2) Vec2 {
 		y: currentY,
 	}
 
-	if isWithinBounds(field, currentX, currentY) && CompareVec2GT(start, current) {
-		current = traverse(field, current)
+	if !CompareVec2EQ(current, start) {
+		visitedPoints = append(visitedPoints, traverse(field, current)...)
 	}
+	visitedPoints = append(visitedPoints, current) // adding it before the if flips it
 
-	return current
+	return visitedPoints
 }
 
 func Part01(input string) {
 	lines := strings.Split(input, "\n")
 
 	var field Field
-	var animalIndex [2]int
+	var animalIndex Vec2
 
 	for i, line := range lines {
 		var block []Pipe
 
 		for j := range line {
-
+			visited := false
 			if line[j] == 'S' {
-				animalIndex[0] = j
-				animalIndex[1] = i
+				animalIndex.x = j
+				animalIndex.y = i
+				visited = true
 			}
 
 			block = append(block, Pipe{
 				ptype:   line[j],
-				visited: false,
+				visited: visited,
 			})
 		}
 
@@ -183,31 +230,36 @@ func Part01(input string) {
 	}
 	// gofmt:ignore
 
-	var final Vec2
+	var distances []int
 
-	for i := animalIndex[1]; i < len(field)-1; i++ {
-		for j := animalIndex[0]; j < len(field[0])-1; j++ {
+	for _, direction := range directions {
+		x, y := direction[0]+animalIndex.x, direction[1]+animalIndex.y
 
-			for _, direction := range directions {
-				x, y := direction[0]+j, direction[1]+i
-
-				if !isWithinBounds(field, x, y) {
-					continue
-				}
-
-				adjacent := field[y][x]
-
-				if adjacent.ptype == '.' {
-					continue
-				}
-
-				final = traverse(field, Vec2{
-					y: y,
-					x: x,
-				})
-			}
+		if !isWithinBounds(field, x, y) {
+			continue
 		}
+
+		adjacent := field[y][x]
+
+		if adjacent.ptype == '.' {
+			continue
+		}
+
+		visitedPoints := traverse(field, Vec2{
+			y: y,
+			x: x,
+		})
+
+		for _, point := range visitedPoints {
+			field[point.y][point.x].visited = false
+		}
+
+		_, idx := findLargest(animalIndex, visitedPoints)
+
+		distances = append(distances, idx)
+		stepsTaken = 0
 	}
 
-	log.Printf("final: %d %d %d", final.x, final.y, stepsTaken)
+	_, maxDistance := utils.MinMax(distances)
+	log.Printf("The maximum distance is %d", maxDistance)
 }
