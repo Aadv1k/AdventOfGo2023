@@ -12,7 +12,7 @@ import (
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
-const RecursionLimit = 200
+const RecursionLimit = 200_000
 
 var directions = [][2]int{
 	{0, 1},
@@ -23,7 +23,9 @@ var directions = [][2]int{
 var stepsTaken = 0
 
 func printField(field Field, current Vec2) {
-	diameter := 4
+	clearScreen()
+
+	diameter := 12
 
 	startX := current.x - diameter
 	if startX < 0 {
@@ -50,7 +52,7 @@ func printField(field Field, current Vec2) {
 			p := field[i][j]
 
 			if i == current.y && j == current.x {
-				fmt.Printf("\x1b[31m[%c]\x1b[0m", p.ptype)
+				fmt.Printf("\x1b[31m[%c]\x1b[0m", '🐭')
 			} else {
 				fmt.Printf(" %c ", p.ptype)
 			}
@@ -60,7 +62,7 @@ func printField(field Field, current Vec2) {
 		fmt.Println()
 	}
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 }
 
 func clearScreen() {
@@ -89,30 +91,30 @@ func isWithinBounds(field Field, x, y int) bool {
 	return y >= 0 && y < len(field) && x >= 0 && x < len(field[0])
 }
 
-func findLargest(origin Vec2, elems []Vec2) (Vec2, int) {
-	log.Print(elems)
-	if len(elems) == 0 {
-		return Vec2{}, -1
+func distanceInLoop(start, point, loopSize int) int {
+	clockwiseDistance := (point - start + loopSize) % loopSize
+	counterclockwiseDistance := (start - point + loopSize) % loopSize
+
+	return int(math.Min(float64(clockwiseDistance), float64(counterclockwiseDistance)))
+}
+
+func farthestInLoop(loop []Vec2, origin Vec2) int {
+	if len(loop) == 0 {
+		return 0
 	}
 
-	// Amen
-	calculateDistance := func(v1, v2 Vec2) int {
-		return int(math.Abs(float64(v1.x-v2.x)) + math.Abs(float64(v1.y-v2.y)))
-	}
+	maxSteps := distanceInLoop(origin.x, loop[0].x, len(loop))
 
-	var largest Vec2
-	maxDistance := -1
-
-	for _, elem := range elems {
-		distance := calculateDistance(origin, elem)
-		if distance > maxDistance {
-			maxDistance = distance
-			largest = elem
+	for _, point := range loop[1:] {
+		steps := distanceInLoop(origin.x, point.x, len(loop))
+		if steps > maxSteps {
+			maxSteps = steps
 		}
 	}
 
-	return largest, maxDistance
+	return maxSteps
 }
+
 func traverse(field Field, start Vec2) []Vec2 {
 	var visitedPoints []Vec2
 
@@ -126,8 +128,6 @@ func traverse(field Field, start Vec2) []Vec2 {
 	stepsTaken++
 
 	field[currentY][currentX].visited = true
-
-	printField(field, start)
 
 	switch currentPipe.ptype {
 	case 'J':
@@ -191,7 +191,7 @@ func traverse(field Field, start Vec2) []Vec2 {
 	if !CompareVec2EQ(current, start) {
 		visitedPoints = append(visitedPoints, traverse(field, current)...)
 	}
-	visitedPoints = append(visitedPoints, current) // adding it before the if flips it
+	visitedPoints = append(visitedPoints, current) // adding it before the 'if statement' flips it
 
 	return visitedPoints
 }
@@ -254,12 +254,11 @@ func Part01(input string) {
 			field[point.y][point.x].visited = false
 		}
 
-		_, idx := findLargest(animalIndex, visitedPoints)
+		idx := farthestInLoop(visitedPoints, animalIndex)
 
 		distances = append(distances, idx)
 		stepsTaken = 0
 	}
 
-	_, maxDistance := utils.MinMax(distances)
-	log.Printf("The maximum distance is %d", maxDistance)
+	log.Printf("The maximum distance is %d", utils.Sum(distances))
 }

@@ -11,6 +11,7 @@ This is my 3rd attempt of AoC, this year I will try to get all of the days 🎄
 - [Day07](./day07) ☆☆
 - [Day08](./day08) ★
 - [Day09](./day09) ★☆
+- [Day09](./day10) ★
 
 ★ = completed the solution
 ☆ = had to get help

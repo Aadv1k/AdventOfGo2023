@@ -64,3 +64,13 @@ func MinMax(array []int) (int, int) {
 	}
 	return min, max
 }
+
+func Sum(elems []int) int {
+	sum := 0
+
+	for _, elem := range elems {
+		sum += elem
+	}
+
+	return sum
+}
