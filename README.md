@@ -11,7 +11,7 @@ This is my 3rd attempt of AoC, this year I will try to get all of the days 🎄
 - [Day07](./day07) ☆☆
 - [Day08](./day08) ★
 - [Day09](./day09) ★☆
-- [Day09](./day10) ★
+- [Day10](./day10) ☆
 
 ★ = completed the solution
 ☆ = had to get help
@@ -37,7 +37,9 @@ Part02: The sum of all calibration, including words values is 142
 
 ## Credits
 
-- thanks to [Mr-Unforgettable](https://github.com/Mr-Unforgettable) for resolving a potential but at day01 
+- thanks to [Mr-Unforgettable](https://github.com/Mr-Unforgettable) 
+        - for resolving a potential but at day01
+        - fixing an offset issue in day02, part01 (#2)
 
 ## Past 
 
