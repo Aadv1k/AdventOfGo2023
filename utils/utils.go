@@ -74,3 +74,13 @@ func Sum(elems []int) int {
 
 	return sum
 }
+
+func Find[T comparable](elems []T, target T) (int, T) {
+	for i := range elems {
+		if elems[i] == target {
+			return i, elems[i]
+		}
+	}
+
+	return -1, nil
+}
