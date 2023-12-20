@@ -30,12 +30,12 @@ func SumOfLine(line string) (int, error) {
 	for i := 0; i < len(line); i++ {
 		ch := line[i]
 		if utils.IsDigit(ch) {
-			first = int(ch)
+			first = int(ch - '0')
 
 			for j := len(line) - 1; j >= i; j-- {
-				ch := line[j]
+				ch = line[j]
 				if utils.IsDigit(ch) {
-					last = int(ch)
+					last = int(ch - '0')
 					break
 				}
 			}
