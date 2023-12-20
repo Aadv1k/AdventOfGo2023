@@ -35,6 +35,9 @@ Part02: The sum of all calibration, including words values is 142
         (took 41.131µs)
 ```
 
+## Credits
+
+- thanks to [Mr-Unforgettable](https://github.com/Mr-Unforgettable) for resolving a potential but at day01 
 
 ## Past 
 
