@@ -35,7 +35,8 @@ func Part01(input string) {
 
 	for _, line := range utils.SplitLines(input) {
 		if isGameLineGood(line) {
-			sumOfGID += lineCount + 1
+			// sumOfGID += lineCount + 1  // Produces incorrect result
+			sumOfGID += lineCount // Fix was by removing + 1
 			goodGames++
 		}
 		lineCount++
