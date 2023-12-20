@@ -82,5 +82,5 @@ func Find[T comparable](elems []T, target T) (int, T) {
 		}
 	}
 
-	return -1, nil
+	return -1, elems[0] // NOTE: how is this suppoed to work?
 }
