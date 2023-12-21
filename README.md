@@ -1,6 +1,6 @@
 # Advent of Code 2023 in Go 🐭
 
-This is my 3rd attempt of AoC, this year I will try to get all of the days 🎄
+This is my 3rd attempt of AoC 🎄! My goal is **not to get 50 stars, with a great solution**, I do AoC to learn a new language in a fun way
 
 - [Day01](./day01) ★★
 - [Day02](./day02) ★★
@@ -12,6 +12,7 @@ This is my 3rd attempt of AoC, this year I will try to get all of the days 🎄
 - [Day08](./day08) ★
 - [Day09](./day09) ★☆
 - [Day10](./day10) ☆
+- [Day11](./day11) ☆  (a dodgy solution that doesn't really work, might do with improvements)
 
 ★ = completed the solution
 ☆ = had to get help
