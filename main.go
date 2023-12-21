@@ -17,6 +17,7 @@ import (
 	"github.com/aadv1k/AdventOfGo2023/day09"
 	"github.com/aadv1k/AdventOfGo2023/day10"
 	"github.com/aadv1k/AdventOfGo2023/day11"
+	"github.com/aadv1k/AdventOfGo2023/day12"
 	"github.com/aadv1k/AdventOfGo2023/utils"
 )
 
@@ -60,6 +61,8 @@ func main() {
 		runDay(day, day10.Part01, nil, input)
 	case "day11":
 		runDay(day, day11.Part01, nil, input)
+	case "day12":
+		runDay(day, day12.Part01, nil, input)
 	default:
 		log.Fatalf("Unknown day: %s\n", day)
 	}
