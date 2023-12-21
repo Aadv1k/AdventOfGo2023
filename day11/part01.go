@@ -2,6 +2,8 @@ package day11
 
 import (
 	"fmt"
+	"log"
+	"math"
 	"strings"
 
 	"github.com/aadv1k/AdventOfGo2023/utils"
@@ -11,7 +13,7 @@ func printGalaxy(g [][]byte) {
 	fmt.Println()
 	for _, row := range g {
 		for _, pixel := range row {
-			fmt.Printf("%c", pixel)
+			fmt.Printf("%c ", pixel)
 		}
 		fmt.Println()
 	}
@@ -31,7 +33,7 @@ func DoExpansion(g *[][]byte) {
 			if (*g)[i][j] != '.' {
 				shouldExpand = false
 
-				found, _ := utils.Find[int](emptyColumns, j)
+				found, _ := utils.Find(emptyColumns, j)
 				if found != -1 {
 					emptyColumns = append(emptyColumns[:found], emptyColumns[found+1:]...)
 				}
@@ -39,8 +41,8 @@ func DoExpansion(g *[][]byte) {
 		}
 
 		if shouldExpand {
-			var toInsert = []byte{'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'}
-			ret = append(ret, toInsert, toInsert)
+			ret = append(ret, []byte{'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'})
+			ret = append(ret, []byte{'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'})
 		}
 
 		ret = append(ret, (*g)[i])
@@ -48,19 +50,22 @@ func DoExpansion(g *[][]byte) {
 
 	for _, col := range emptyColumns {
 		for i := range ret {
-			var newRow []byte
-			newRow = append(newRow, ret[i][:col]...)
-			newRow = append(newRow, []byte{'.', '.'}...)
-			newRow = append(newRow, ret[i][col:]...)
-
-			ret[i] = newRow
+			if col >= 0 && col <= len(ret[i]) {
+				ret[i] = append(ret[i][:col], append([]byte{'.'}, ret[i][col:]...)...)
+			}
 		}
 	}
 
 	*g = ret
-
 }
 
+// x, y
+func manhattanDistance(p1, p2 []int) int {
+	return int(math.Abs(float64(p2[0]-p1[0])) + math.Abs(float64(p2[1]-p1[1])))
+}
+
+// NOTE: this solution is a bit dodgy, this is due to the way we compute the distances, the function
+// manhattanDistance can be greately improved
 func Part01(input string) {
 	lines := strings.Split(input, "\n")
 
@@ -78,5 +83,24 @@ func Part01(input string) {
 
 	DoExpansion(&galaxyImg)
 
-	printGalaxy(galaxyImg)
+	var points [][]int
+
+	for i := range galaxyImg {
+		for j := range galaxyImg[i] {
+			if galaxyImg[i][j] == '#' {
+				points = append(points, []int{i, j})
+			}
+		}
+	}
+
+	var shortestPaths []int
+	for i := range points {
+		current := points[i]
+
+		for j := range points[i+1:] {
+			shortestPaths = append(shortestPaths, manhattanDistance(current, points[j]))
+		}
+	}
+
+	log.Print(utils.Sum(shortestPaths))
 }
